@@ -165,9 +165,16 @@
 <script type="text/javascript">
     (function(){
         var speedArr = [];
-        for(var i = 0 ; i < 1000 ; i++){
+        for(var i = 0 ; i < 800 ; i++){
             speedArr.push([0.01 * i + 0.01, (0.01 * i + 0.01)]);
         }
+        for (var i = 500 ; i > 0 ; i--){
+            speedArr.push([0.01 * i + 0.01, (0.01 * i + 0.01)]);
+        }
+
+
+
+        var loop;
 
 
         var choosed = JSON.parse(localStorage.getItem('choosed')) || {};
@@ -179,10 +186,14 @@
             TagCanvas.SetSpeed('myCanvas', [0,0]);
 
             var i = 0;
-            var k = setInterval(function(){
+            loop = setInterval(function(){
                 TagCanvas.SetSpeed('myCanvas', speedArr[i]);
                 i++;
-            }, 50);
+                if (i == speedArr.length){
+                    toggle();
+                }
+
+            }, 10);
         };
         var getKey = function(item){
             return item.name + '-' + item.phone;
@@ -202,20 +213,20 @@
             var list = canvas.getElementsByTagName('a');
             var color = 'yellow';
             var ret = member
-                .filter(function(m, index){
+                .filter(function(m, index){ //- 过滤已中奖的人
                     m.index = index;
                     return !choosed[getKey(m)];
                 })
-                .map(function(m){
+                .map(function(m){       //-
                     return Object.assign({
                       score: Math.random()
                     }, m);
                 })
-                .sort(function(a, b){
+                .sort(function(a, b){           //- 按照分数排名
                     return a.score - b.score;
                 })
-                .slice(0, count)
-                .map(function(m){
+                .slice(0, count)                //- 截取排名后前n位
+                .map(function(m){               //- 设置样式，加入中奖列表
                   choosed[getKey(m)] = 1;
                   list[m.index].style.color = color;
                   return m.name + '<br/>' + m.phone; 
@@ -244,6 +255,7 @@
                     textHeight: 14,
                     shape : "sphere"
                 });
+                window.toggle = this.toggle;
             },
             methods: {
                 reset: function(){
@@ -258,7 +270,8 @@
                     this.selected = num;
                 },
                 toggle: function(){
-                    if(this.running){
+                    if(this.running){   //-停止
+                        clearInterval(loop);
                         TagCanvas.SetSpeed('myCanvas', speed());
                         var ret = lottery(this.selected);
                         if (ret.length === 0) {
@@ -271,11 +284,11 @@
                             localStorage.setItem(new Date().toString(), JSON.stringify(ret));
                             $('#main').addClass('mask');
                         }, 300);
-                    } else {
+                    } else {        //-开始
                         $('#result').css('display', 'none');
                         $('#main').removeClass('mask');
-                        //TagCanvas.SetSpeed('myCanvas', [5, 1]);
                         quickToSlowSpeed();
+                        //TagCanvas.SetSpeed('myCanvas', [5, 1]);
                     }
                     this.running = !this.running;
                 }
