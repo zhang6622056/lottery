@@ -164,10 +164,25 @@
 <script type="text/javascript" src="js/member.js"></script>
 <script type="text/javascript">
     (function(){
+        var speedArr = [];
+        for(var i = 0 ; i < 1000 ; i++){
+            speedArr.push([0.01 * i + 0.01, (0.01 * i + 0.01)]);
+        }
+
+
         var choosed = JSON.parse(localStorage.getItem('choosed')) || {};
         console.log(choosed);
         var speed = function(){
             return [0.1 * Math.random() + 0.01, -(0.1 * Math.random() + 0.01)];
+        };
+        var quickToSlowSpeed = function(){
+            TagCanvas.SetSpeed('myCanvas', [0,0]);
+
+            var i = 0;
+            var k = setInterval(function(){
+                TagCanvas.SetSpeed('myCanvas', speedArr[i]);
+                i++;
+            }, 50);
         };
         var getKey = function(item){
             return item.name + '-' + item.phone;
@@ -218,9 +233,7 @@
             data: {
                 selected: 30,
                 running: false,
-                btns: [
-                    30, 10, 5, 2, 1
-                ]
+                btns: [30, 10, 5, 2, 1]
             },
             mounted () {
                 canvas.innerHTML = createHTML();
@@ -228,7 +241,8 @@
                     textColour: null,
                     initial: speed(),
                     dragControl: 1,
-                    textHeight: 14
+                    textHeight: 14,
+                    shape : "sphere"
                 });
             },
             methods: {
@@ -260,7 +274,8 @@
                     } else {
                         $('#result').css('display', 'none');
                         $('#main').removeClass('mask');
-                        TagCanvas.SetSpeed('myCanvas', [5, 1]);
+                        //TagCanvas.SetSpeed('myCanvas', [5, 1]);
+                        quickToSlowSpeed();
                     }
                     this.running = !this.running;
                 }
