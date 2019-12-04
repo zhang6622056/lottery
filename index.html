@@ -164,6 +164,8 @@
 <script type="text/javascript" src="js/member.js"></script>
 <script type="text/javascript">
     (function(){
+
+        //- 速度帧数组
         var speedArr = [];
         for(var i = 0 ; i < 800 ; i++){
             speedArr.push([0.01 * i + 0.01, (0.01 * i + 0.01)]);
@@ -174,9 +176,15 @@
 
 
 
+
+
+
+
+
+
+
+
         var loop;
-
-
         var choosed = JSON.parse(localStorage.getItem('choosed')) || {};
         console.log(choosed);
         var speed = function(){
@@ -217,7 +225,7 @@
                     m.index = index;
                     return !choosed[getKey(m)];
                 })
-                .map(function(m){       //-
+                .map(function(m){
                     return Object.assign({
                       score: Math.random()
                     }, m);
