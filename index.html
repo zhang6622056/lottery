@@ -97,6 +97,7 @@
             text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
         }
         .button-success {
+            display:none;
             background: rgb(28, 184, 65);
         }
         .button-error {
@@ -115,7 +116,7 @@
             text-align: center;
         }
         .tools .pure-button {
-            display: inline-block;
+            /*display: inline-block;*/
             margin: 5px;
             padding: 10px 0;
             text-align: center;
@@ -152,10 +153,9 @@
         :class="{ 'button-error': selected == value}"
        >{{value}}</button>
     <button
-       class="pure-button"
        @click="toggle"
-       :class="{'button-secondary': !running,
-               'button-success': running}">{{running?'停!':'开始'}}</button>
+        id="start_btn"
+        class="pure-button button-secondary">开始</button>
     <button class="pure-button button-warning" @click="reset">重置</button>
 </div>
 <script type="text/javascript" src="js/zepto.js"></script>
@@ -167,10 +167,10 @@
 
         //- 速度帧数组
         var speedArr = [];
-        for(var i = 0 ; i < 500 ; i++){
+        for(var i = 0 ; i < 200 ; i++){
             speedArr.push([0.01 * i + 0.01, (0.01 * i + 0.01)]);
         }
-        for (var i = 500 ; i > 0 ; i--){
+        for (var i = 200 ; i > 0 ; i--){
             speedArr.push([0.01 * i + 0.01, (0.01 * i + 0.01)]);
         }
 
@@ -206,6 +206,12 @@
         var speed = function(){
             return [0.1 * Math.random() + 0.01, -(0.1 * Math.random() + 0.01)];
         };
+
+
+        var sleep = function sleep(delay){
+            var start = Date.now();
+            while((Date.now() - start) < delay){}
+        }
         var quickToSlowSpeed = function(){
             TagCanvas.SetSpeed('myCanvas', [0,0]);
 
@@ -273,7 +279,7 @@
                 .map(function(m){               //- 设置样式，加入中奖列表
                   choosed[getKey(m)] = 1;
                   list[m.index].style.color = color;
-                  return m.name + '<br/>' + m.phone; 
+                  return m.name + '<br/>' + m.phone;
                 });
             localStorage.setItem('choosed', JSON.stringify(choosed));
             return ret;
@@ -316,22 +322,40 @@
                 toggle: function(){
                     if(this.running){   //-停止
                         clearInterval(loop);
-                        TagCanvas.SetSpeed('myCanvas', speed());
                         var ret = lottery(this.selected);
                         if (ret.length === 0) {
                             $('#result').css('display', 'block').html('<span>已抽完</span>');
                             return
                         }
-                        $('#result').css('display', 'block').html('<span>' + ret.join('</span><span>') + '</span>');
-                        TagCanvas.Reload('myCanvas');
-                        setTimeout(function(){
-                            localStorage.setItem(new Date().toString(), JSON.stringify(ret));
-                            $('#main').addClass('mask');
-                        }, 300);
+
+                        //- 中奖效果
+                        var i = 0;
+                        var loopLucker = setInterval(function(){
+                            var text = ret[i].split("<br/>")[0];
+                            TagCanvas.RotateTag('myCanvas', {text: text, lat: 0, lng: 0});
+                            i++;
+                            if (i == ret.length){
+                                clearInterval(loopLucker);
+
+                                //- 中奖结果公示
+                                setTimeout(function(){
+                                    $('#start_btn').css('display', 'inline-block');
+                                    TagCanvas.SetSpeed('myCanvas', speed());
+                                    $('#result').css('display', 'block').html('<span>' + ret.join('</span><span>') + '</span>');
+                                    TagCanvas.Reload('myCanvas');
+                                    setTimeout(function(){
+                                        localStorage.setItem(new Date().toString(), JSON.stringify(ret));
+                                        $('#main').addClass('mask');
+                                    }, 300);
+                                },2000)
+                            }
+
+                        }, 1500);
                     } else {        //-开始
                         $('#result').css('display', 'none');
                         $('#main').removeClass('mask');
                         quickToSlowSpeed();
+                        $('#start_btn').css('display', 'none');
                         //TagCanvas.SetSpeed('myCanvas', [5, 1]);
                     }
                     this.running = !this.running;
