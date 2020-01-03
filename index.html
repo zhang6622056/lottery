@@ -180,11 +180,7 @@
         var lastIndex = 50;
         var makeSureArr = new Array();
         for (var i = 0 ; i < member.length; i++){
-            if (i < 10){
-                makeSureArr.push(member[i]);
-            }else if (i > 50 && i < 70){
-                makeSureArr.push(member[i]);
-            }else if (i > 100 && i < 120){
+            if(i < 70){
                 makeSureArr.push(member[i]);
             }
         }
@@ -278,8 +274,7 @@
                 .slice(0, count)                //- 截取排名后前n位
                 .map(function(m){               //- 设置样式，加入中奖列表
                   choosed[getKey(m)] = 1;
-                  list[m.index].style.color = color;
-                  return m.name + '<br/>' + m.phone;
+                  return m.name + '<br/>' + m.photo;
                 });
             localStorage.setItem('choosed', JSON.stringify(choosed));
             return ret;
@@ -294,7 +289,7 @@
             data: {
                 selected: 30,
                 running: false,
-                btns: [30, 10, 5, 2, 1]
+                btns: [10,8,5,4,3,2,1]
             },
             mounted () {
                 canvas.innerHTML = createHTML();

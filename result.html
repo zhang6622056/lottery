@@ -57,34 +57,20 @@
 </div>
 <script type="text/javascript" src="js/vue.js"></script>
 <script type="text/javascript">
-    new Vue({
-        el: '#main',
-        data: {
-            results: []
-        },
-        mounted () {
-            let vm = this
-            let locals = window.localStorage
-            let str_results = []
-            // 遍历(排除choosed)
-            for(let i = 0; i<localStorage.length; i++){
-                if (localStorage.key(i) !== 'choosed') {
-                    str_results.push(localStorage.getItem(localStorage.key(i)))
-                }
-            }
-            // 分割每个string, 并将</br>换成空格
-            let results = []
-            for(let nameList of str_results) {
-                let temp = JSON.parse(nameList)
-                temp = temp.map(item => {return item.replace('<br/>', ' ')})
-                results.push(temp)
-            }
-            
-            // 根据长度进行排序，名单短的放在前面
-            results = results.sort((x, y) => { return x.length - y.length;})
-            this.results = results
-        },
-    })
+    !(function(){
+        'use strict';
+
+
+
+
+
+    })();
+
+
+
+
+
+
 </script>
 </body>
 </html>
